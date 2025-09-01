@@ -16,7 +16,6 @@ package fhir
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 )
 
@@ -24,45 +23,32 @@ import (
 // PLEASE DO NOT EDIT BY HAND
 
 // DocumentReferenceStatus is documented here http://hl7.org/fhir/ValueSet/document-reference-status
-type DocumentReferenceStatus int
+type DocumentReferenceStatus string
 
 const (
-	DocumentReferenceStatusCurrent DocumentReferenceStatus = iota
-	DocumentReferenceStatusSuperseded
-	DocumentReferenceStatusEnteredInError
+	DocumentReferenceStatusCurrent        DocumentReferenceStatus = "current"
+	DocumentReferenceStatusSuperseded     DocumentReferenceStatus = "superseded"
+	DocumentReferenceStatusEnteredInError DocumentReferenceStatus = "entered-in-error"
 )
 
 func (code DocumentReferenceStatus) MarshalJSON() ([]byte, error) {
 	return json.Marshal(code.Code())
 }
-func (code *DocumentReferenceStatus) UnmarshalJSON(json []byte) error {
-	s := strings.Trim(string(json), "\"")
-	switch s {
-	case "current":
-		*code = DocumentReferenceStatusCurrent
-	case "superseded":
-		*code = DocumentReferenceStatusSuperseded
-	case "entered-in-error":
-		*code = DocumentReferenceStatusEnteredInError
-	default:
-		return fmt.Errorf("unknown DocumentReferenceStatus code `%s`", s)
-	}
+
+func (code *DocumentReferenceStatus) UnmarshalJSON(data []byte) error {
+	s := strings.Trim(string(data), "\"")
+	*code = DocumentReferenceStatus(s)
 	return nil
 }
+
 func (code DocumentReferenceStatus) String() string {
 	return code.Code()
 }
+
 func (code DocumentReferenceStatus) Code() string {
-	switch code {
-	case DocumentReferenceStatusCurrent:
-		return "current"
-	case DocumentReferenceStatusSuperseded:
-		return "superseded"
-	case DocumentReferenceStatusEnteredInError:
-		return "entered-in-error"
-	}
-	return "<unknown>"
+	return string(code)
 }
+
 func (code DocumentReferenceStatus) Display() string {
 	switch code {
 	case DocumentReferenceStatusCurrent:
@@ -71,9 +57,11 @@ func (code DocumentReferenceStatus) Display() string {
 		return "Superseded"
 	case DocumentReferenceStatusEnteredInError:
 		return "Entered in Error"
+	default:
+		return string(code)
 	}
-	return "<unknown>"
 }
+
 func (code DocumentReferenceStatus) Definition() string {
 	switch code {
 	case DocumentReferenceStatusCurrent:
@@ -82,6 +70,7 @@ func (code DocumentReferenceStatus) Definition() string {
 		return "This reference has been superseded by another reference."
 	case DocumentReferenceStatusEnteredInError:
 		return "This reference was created in error."
+	default:
+		return "Custom or non-standard status code: " + string(code)
 	}
-	return "<unknown>"
 }
