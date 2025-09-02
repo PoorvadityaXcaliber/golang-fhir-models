@@ -16,7 +16,6 @@ package fhir
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 )
 
@@ -24,50 +23,33 @@ import (
 // PLEASE DO NOT EDIT BY HAND
 
 // CompositionStatus is documented here http://hl7.org/fhir/ValueSet/composition-status
-type CompositionStatus int
+type CompositionStatus string
 
 const (
-	CompositionStatusPreliminary CompositionStatus = iota
-	CompositionStatusFinal
-	CompositionStatusAmended
-	CompositionStatusEnteredInError
+	CompositionStatusPreliminary    CompositionStatus = "preliminary"
+	CompositionStatusFinal          CompositionStatus = "final"
+	CompositionStatusAmended        CompositionStatus = "amended"
+	CompositionStatusEnteredInError CompositionStatus = "entered-in-error"
 )
 
 func (code CompositionStatus) MarshalJSON() ([]byte, error) {
 	return json.Marshal(code.Code())
 }
-func (code *CompositionStatus) UnmarshalJSON(json []byte) error {
-	s := strings.Trim(string(json), "\"")
-	switch s {
-	case "preliminary":
-		*code = CompositionStatusPreliminary
-	case "final":
-		*code = CompositionStatusFinal
-	case "amended":
-		*code = CompositionStatusAmended
-	case "entered-in-error":
-		*code = CompositionStatusEnteredInError
-	default:
-		return fmt.Errorf("unknown CompositionStatus code `%s`", s)
-	}
+
+func (code *CompositionStatus) UnmarshalJSON(data []byte) error {
+	s := strings.Trim(string(data), "\"")
+	*code = CompositionStatus(s)
 	return nil
 }
+
 func (code CompositionStatus) String() string {
 	return code.Code()
 }
+
 func (code CompositionStatus) Code() string {
-	switch code {
-	case CompositionStatusPreliminary:
-		return "preliminary"
-	case CompositionStatusFinal:
-		return "final"
-	case CompositionStatusAmended:
-		return "amended"
-	case CompositionStatusEnteredInError:
-		return "entered-in-error"
-	}
-	return "<unknown>"
+	return string(code)
 }
+
 func (code CompositionStatus) Display() string {
 	switch code {
 	case CompositionStatusPreliminary:
